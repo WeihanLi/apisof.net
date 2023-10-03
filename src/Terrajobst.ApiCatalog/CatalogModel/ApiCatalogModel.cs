@@ -836,6 +836,8 @@ public sealed partial class ApiCatalogModel
             _index = -1;
         }
 
+        public int Count => _count;
+
         IEnumerator<ApiModel> IEnumerable<ApiModel>.GetEnumerator()
         {
             return GetEnumerator();

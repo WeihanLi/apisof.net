@@ -1,4 +1,6 @@
-﻿using NuGet.Frameworks;
+﻿using System.Xml.Linq;
+
+using NuGet.Frameworks;
 
 namespace Terrajobst.ApiCatalog;
 
@@ -76,11 +78,11 @@ public sealed class ApiAvailabilityContext
         return new ApiAvailability(result.ToArray());
     }
 
-    public ApiFrameworkAvailability GetAvailability(ApiModel api, NuGetFramework nugetFramework)
+    public ApiFrameworkAvailability GetAvailability(ApiModel api, NuGetFramework nugetFramework, PackageModel? package = null)
     {
         // Try to resolve an in-box assembly
 
-        if (_frameworkIds.TryGetValue(nugetFramework, out var frameworkId))
+        if (package is null && _frameworkIds.TryGetValue(nugetFramework, out var frameworkId))
         {
             if (_frameworkAssemblies.TryGetValue(frameworkId, out var frameworkAssemblies))
             {
@@ -98,13 +100,16 @@ public sealed class ApiAvailabilityContext
 
         foreach (var declaration in api.Declarations)
         {
-            foreach (var (package, _) in declaration.Assembly.Packages)
+            foreach (var (p, _) in declaration.Assembly.Packages)
             {
-                if (_packageFolders.TryGetValue(package.Id, out var folders))
+                if (package is not null && package != p)
+                    continue;
+
+                if (_packageFolders.TryGetValue(p.Id, out var folders))
                 {
                     var folder = NuGetFrameworkUtility.GetNearest(folders, nugetFramework);
                     if (folder is not null && folder.Assemblies.Contains(declaration.Assembly))
-                        return new ApiFrameworkAvailability(nugetFramework, declaration, package, folder.TargetFramework);
+                        return new ApiFrameworkAvailability(nugetFramework, declaration, p, folder.TargetFramework);
                 }
             }
         }

@@ -1,5 +1,8 @@
 ﻿using System.Collections;
 
+using NuGet.Frameworks;
+using NuGet.Packaging;
+
 namespace Terrajobst.ApiCatalog;
 
 public readonly struct PackageModel : IEquatable<PackageModel>

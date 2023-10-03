@@ -135,42 +135,12 @@ public partial class CatalogItem
 
     private PreviewRequirementModel? GetPreviewRequirement()
     {
-        if (SelectedAvailability is null)
-            return null;
-
-        var assembly = SelectedAvailability.Declaration.Assembly;
-
-        foreach (var api in Api.AncestorsAndSelf())
-        {
-            if (api.Kind == ApiKind.Namespace)
-                break;
-
-            var declaration = api.Declarations.First(d => d.Assembly == assembly);
-            if (declaration.PreviewRequirement is not null)
-                return declaration.PreviewRequirement;
-        }
-
-        return assembly.PreviewRequirement;
+        return SelectedAvailability?.Declaration.GetEffectivePreviewRequirement();
     }
 
     private ExperimentalModel? GetExperimental()
     {
-        if (SelectedAvailability is null)
-            return null;
-
-        var assembly = SelectedAvailability.Declaration.Assembly;
-
-        foreach (var api in Api.AncestorsAndSelf())
-        {
-            if (api.Kind == ApiKind.Namespace)
-                break;
-
-            var declaration = api.Declarations.First(d => d.Assembly == assembly);
-            if (declaration.Experimental is not null)
-                return declaration.Experimental;
-        }
-
-        return assembly.Experimental;
+        return SelectedAvailability?.Declaration.GetEffectiveExperimental();
     }
 
     private async void NavigationManager_LocationChanged(object sender, LocationChangedEventArgs e)

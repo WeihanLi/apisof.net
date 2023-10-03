@@ -11,6 +11,8 @@ public readonly struct ApiDeclarationModel : IEquatable<ApiDeclarationModel>
         _offset = offset;
     }
 
+    public int Id => _offset;
+
     public ApiCatalogModel Catalog => _api.Catalog;
 
     public ApiModel Api => _api;
@@ -58,8 +60,13 @@ public readonly struct ApiDeclarationModel : IEquatable<ApiDeclarationModel>
 
     public Markup GetMyMarkup()
     {
-        var markupOffset = _api.Catalog.ApiTable.ReadInt32(_offset + 4);
+        var markupOffset = GetMyMarkupId();
         return _api.Catalog.GetMarkup(markupOffset);
+    }
+
+    public int GetMyMarkupId()
+    {
+        return _api.Catalog.ApiTable.ReadInt32(_offset + 4);
     }
 
     public Markup GetMarkup()
